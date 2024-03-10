@@ -20,7 +20,9 @@ if __name__ == "__main__":
     model = neuralnet.NeuralNetwork().to(device)
     print(model)
 
-    df = loader.json_to_csv('../data/raw_data/public_validation_set_2.0/annotations.json', '../data/raw_data/public_validation_set_2.0/images')
+    df = loader.json_to_csv('../data/raw_data/public_training_set_release_2.0/annotations.json')
+    train_dataloader, valid_dataloader = loader.get_data_loader(32)
     print(df)
+    # print(df['category_id'].nunique())
 
 
