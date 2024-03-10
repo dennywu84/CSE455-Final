@@ -7,16 +7,20 @@ from torchvision import datasets, transforms
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28*28, 512),
+        # self.flatten = nn.Flatten()
+        self.conv_relu_stack = nn.Sequential(
+            nn.Conv2d(3, 8, 3),
             nn.ReLU(),
-            nn.Linear(512, 512),
+            nn.Conv2d(8, 16, 3),
             nn.ReLU(),
-            nn.Linear(512, 10),
+            nn.Conv2d(16, 32, 3),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
+        self.fc1 = nn.Linear(125*125*32, 498)
 
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
+        # x = self.flatten(x)
+        logits = self.conv_relu_stack(x)
+        logits = self.fc1(logits)
         return logits
