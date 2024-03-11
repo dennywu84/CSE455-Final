@@ -27,12 +27,15 @@ if __name__ == "__main__":
     print(df)
 
     train_dataloader, valid_dataloader = loader.get_data_loader(32)
-    
-    epochs = 1
+
+    epochs = 10
     for epoch in range(epochs):
+        learning_rate = 1e-3
+        loss_fn = nn.CrossEntropyLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
         print(f"Epoch {epoch+1}\n-------------------------------")
-        helper.train(train_dataloader, model)
-        helper.test(valid_dataloader, model)
+        helper.train(train_dataloader, model, loss_fn, optimizer)
+        helper.test(valid_dataloader, model, loss_fn)
 
     
     # print(df['category_id'].nunique())

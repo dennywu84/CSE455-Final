@@ -23,11 +23,20 @@ def json_to_csv(annotations_path):
 
     # map category names
     category_mapping = {category['id']: category['name_readable'] for category in data['categories']}
-    result_df.loc['category_name'] = result_df['category_id'].map(category_mapping)
+    result_df['category_name'] = result_df['category_id'].map(category_mapping)
+    
+    #map category ids to category indices
+    unique = result_df['category_id'].unique() # get array of unique category ids
+    category_id_to_index = {}
+    for index, category_id in enumerate(unique):
+        category_id_to_index[category_id] = index
 
+    result_df['category_index'] = result_df['category_id'].map(category_id_to_index)
+    
+    return_df = result_df[['file_name', 'category_index', 'category_name']]
     # result_df[['image_path', 'category_id', 'category_name']].to_csv('output.csv', index=False)
 
-    return result_df
+    return return_df
 
 
 class CustomImageDataset(Dataset):
