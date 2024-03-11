@@ -9,13 +9,15 @@ import numpy as np
 
 
 # We can try using SGD, ADAM, or RMSProp optimizers to see if one is better
-def train(dataloader, model, loss_fn, optimizer):
+def train(dataloader, model, loss_fn, optimizer, device):
 
     model.train()
     total_correct = 0
     size = len(dataloader.dataset)
 
     for inputs, labels in tqdm.tqdm(dataloader):
+        inputs, labels = inputs.to(device), labels.to(device)
+
         # Predict data (x) and then compare with labels (y)
         prediction = model(inputs)
         loss = loss_fn(prediction, labels)
@@ -31,13 +33,15 @@ def train(dataloader, model, loss_fn, optimizer):
     accuracy = total_correct / size
     print(f"Accuracy: {accuracy * 100:.2f}%")
 
-def test(dataloader, model, loss_fn):
+def test(dataloader, model, loss_fn, device):
     model.eval()
     size = len(dataloader.dataset)
     total_loss, correct = 0, 0
 
     with torch.no_grad():
         for inputs, labels in tqdm.tqdm(dataloader):
+            inputs, labels = inputs.to(device), labels.to(device)
+
             prediction = model(inputs)
             loss = loss_fn(prediction, labels)
             total_loss += loss.item()
