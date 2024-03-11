@@ -43,8 +43,7 @@ def test(dataloader, model, loss_fn, device):
             inputs, labels = inputs.to(device), labels.to(device)
 
             prediction = model(inputs)
-            loss = loss_fn(prediction, labels)
-            total_loss += loss.item()
+            total_loss += loss_fn(prediction, labels).item()
             correct += (prediction.argmax(1) == labels).type(torch.float).sum().item()
     
     avg_loss = total_loss/len(dataloader)
