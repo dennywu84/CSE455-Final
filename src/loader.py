@@ -45,6 +45,7 @@ class CustomImageDataset(Dataset):
         image = read_image(img_path)
         label = self.img_labels.iloc[idx, 1]
         if self.transform:
+            image = transforms.functional.to_pil_image(image)
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
@@ -67,8 +68,8 @@ valid_transformer = transforms.Compose([
 
 
 def get_data_loader(batch_size):
-    train_dataset = CustomImageDataset('../data/raw_data/public_training_set_release_2.0/annotations.json', transform=train_transformer)
-    valid_dataset = CustomImageDataset('../data/raw_data/public_validation_set_2.0/annotations.json', transform=valid_transformer)
+    train_dataset = CustomImageDataset('../data/raw_data/public_training_set_release_2.0/annotations.json', '../data/raw_data/public_training_set_release_2.0/images', transform=train_transformer)
+    valid_dataset = CustomImageDataset('../data/raw_data/public_validation_set_2.0/annotations.json', '../data/raw_data/public_validation_set_2.0/images', transform=valid_transformer)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     valid_dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)

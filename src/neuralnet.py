@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__()
@@ -23,4 +24,9 @@ class NeuralNetwork(nn.Module):
         # x = self.flatten(x)
         logits = self.conv_relu_stack(x)
         logits = self.fc1(logits)
+
+        # x = self.conv_relu_stack(x)
+        # batch_size = x.shape[0]
+        # x = x.view(batch_size, - 1)
+        # x = self.fc1(x)
         return logits
