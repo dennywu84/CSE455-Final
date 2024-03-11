@@ -25,6 +25,9 @@ def json_to_csv(annotations_path):
     category_mapping = {category['id']: category['name_readable'] for category in data['categories']}
     result_df['category_name'] = result_df['category_id'].map(category_mapping)
     
+    cat_per_image = result_df.groupby('file_name')['category_id'].nunique()
+    single_cat_images = cat_per_image[cat_per_image == 1].index
+
     #map category ids to category indices
     unique = result_df['category_id'].unique() # get array of unique category ids
     category_id_to_index = {}
@@ -32,8 +35,9 @@ def json_to_csv(annotations_path):
         category_id_to_index[category_id] = index
 
     result_df['category_index'] = result_df['category_id'].map(category_id_to_index)
-    
-    return_df = result_df[['file_name', 'category_index', 'category_name']]
+
+
+    return_df = result_df[result_df['file_name'].isin(single_cat_images)][['file_name', 'category_index', 'category_name']]
     # result_df[['image_path', 'category_id', 'category_name']].to_csv('output.csv', index=False)
 
     return return_df
