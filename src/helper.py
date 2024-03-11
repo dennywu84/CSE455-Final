@@ -8,9 +8,8 @@ import numpy as np
 
 
 
-# We can try using SGD, ADAM, or RMSProp optimizers to see if one is better. Default will just be no optimizer
-def train(dataloader, model, optimizer=None):
-    loss_fn = nn.CrossEntropyLoss()
+# We can try using SGD, ADAM, or RMSProp optimizers to see if one is better
+def train(dataloader, model, loss_fn, optimizer):
 
     model.train()
     total_correct = 0
@@ -32,8 +31,7 @@ def train(dataloader, model, optimizer=None):
     accuracy = total_correct / size
     print(f"Accuracy: {accuracy * 100:.2f}%")
 
-def test(dataloader, model):
-    loss_fn = nn.CrossEntropyLoss()
+def test(dataloader, model, loss_fn):
     model.eval()
     size = len(dataloader.dataset)
     total_loss, correct = 0, 0

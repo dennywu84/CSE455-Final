@@ -23,10 +23,9 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         # x = self.flatten(x)
         logits = self.conv_relu_stack(x)
-        logits = self.fc1(logits)
 
         # x = self.conv_relu_stack(x)
-        # batch_size = x.shape[0]
-        # x = x.view(batch_size, - 1)
-        # x = self.fc1(x)
+        batch_size = logits.shape[0]
+        logits = logits.view(batch_size, - 1)
+        logits = self.fc1(logits)
         return logits
