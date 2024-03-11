@@ -22,15 +22,19 @@ if __name__ == "__main__":
     model = neuralnet.NeuralNetwork().to(device)
     print(model)
 
+    # testing json_to_csv
     df = loader.json_to_csv('../data/raw_data/public_training_set_release_2.0/annotations.json')
+    print(df)
+
     train_dataloader, valid_dataloader = loader.get_data_loader(32)
+    
     epochs = 1
-    for x in range(epochs):
-        print(f"Epoch {x+1}\n-------------------------------")
+    for epoch in range(epochs):
+        print(f"Epoch {epoch+1}\n-------------------------------")
         helper.train(train_dataloader, model)
         helper.test(valid_dataloader, model)
 
-    print(df)
+    
     # print(df['category_id'].nunique())
 
 

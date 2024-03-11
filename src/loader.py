@@ -23,7 +23,7 @@ def json_to_csv(annotations_path):
 
     # map category names
     category_mapping = {category['id']: category['name_readable'] for category in data['categories']}
-    result_df['category_name'] = result_df['category_id'].map(category_mapping)
+    result_df.loc['category_name'] = result_df['category_id'].map(category_mapping)
 
     # result_df[['image_path', 'category_id', 'category_name']].to_csv('output.csv', index=False)
 
