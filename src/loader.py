@@ -9,6 +9,9 @@ from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torchvision import transforms
 
+import constants
+
+category_id_to_index = {}
 
 def json_to_csv(annotations_path):
     with open(annotations_path, 'r') as f:
@@ -24,19 +27,30 @@ def json_to_csv(annotations_path):
     # map category names
     category_mapping = {category['id']: category['name_readable'] for category in data['categories']}
     result_df['category_name'] = result_df['category_id'].map(category_mapping)
-    
-    #map category ids to category indices
-    unique = result_df['category_id'].unique() # get array of unique category ids
-    category_id_to_index = {}
-    for index, category_id in enumerate(unique):
-        category_id_to_index[category_id] = index
 
-    result_df['category_index'] = result_df['category_id'].map(category_id_to_index)
-    
-    return_df = result_df[['file_name', 'category_index', 'category_name']]
-    # result_df[['image_path', 'category_id', 'category_name']].to_csv('output.csv', index=False)
+    # filter out images with more than one label
+    cat_per_image = result_df.groupby('file_name')['category_id'].nunique()
+    single_cat_images = cat_per_image[cat_per_image == 1].index
 
-    return return_df
+    filtered_df = result_df[result_df['file_name'].isin(single_cat_images)][['file_name', 'category_id', 'category_name']]
+
+    # map category ids to category indices
+    # builds the dictionary
+    if not category_id_to_index:
+        unique = filtered_df['category_id'].unique() # get array of unique category ids
+        for index, category_id in enumerate(unique):
+            category_id_to_index[category_id] = index
+
+    # uses the dictionary
+    filtered_df['category_index'] = filtered_df['category_id'].map(category_id_to_index)
+
+    return_df = filtered_df[['file_name', 'category_index', 'category_name']]
+
+    return_df.sort_values(by='category_index', inplace=True)
+
+    answer = return_df[return_df['category_index'].between(constants.MIN_INDEX, constants.MAX_INDEX - 1)]
+    print(answer)
+    return answer
 
 
 class CustomImageDataset(Dataset):
@@ -62,7 +76,7 @@ class CustomImageDataset(Dataset):
 
 
 train_transformer = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomAffine(degrees=5, shear=[-10,10,-10,10]),
@@ -70,7 +84,7 @@ train_transformer = transforms.Compose([
 ])
 
 valid_transformer = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])

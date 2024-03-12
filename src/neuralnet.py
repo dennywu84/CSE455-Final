@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+import constants
 
 class NeuralNetwork(nn.Module):
     def __init__(self):
@@ -18,7 +19,9 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2)
         )
-        self.fc1 = nn.Linear(125*125*32, 498)
+        self.fc1 = nn.Linear(29*29*32, 64)
+        self.dropout = nn.Dropout(0.2)
+        self.fc2 = nn.Linear(64, constants.MAX_INDEX - constants.MIN_INDEX)
 
     def forward(self, x):
         # x = self.flatten(x)
@@ -28,4 +31,6 @@ class NeuralNetwork(nn.Module):
         batch_size = logits.shape[0]
         logits = logits.view(batch_size, - 1)
         logits = self.fc1(logits)
+        logits = self.dropout(logits)
+        logits = self.fc2(logits)
         return logits
