@@ -32,8 +32,9 @@ if __name__ == "__main__":
 
     epochs = 10
     for epoch in range(epochs):
-        learning_rate = 0.01 * 0.8 ** epoch
-        learning_rate = max(learning_rate, 1e-6)
+        #learning_rate = 0.01 * 0.8 ** epoch
+        #learning_rate = max(learning_rate, 1e-6)
+        learning_rate = 1e-4
         weight_decay = 1e-3
         loss_fn = nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
