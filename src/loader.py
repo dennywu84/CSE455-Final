@@ -9,6 +9,9 @@ from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torchvision import transforms
 
+import constants
+
+category_id_to_index = {}
 
 def json_to_csv(annotations_path):
     with open(annotations_path, 'r') as f:
@@ -25,27 +28,29 @@ def json_to_csv(annotations_path):
     category_mapping = {category['id']: category['name_readable'] for category in data['categories']}
     result_df['category_name'] = result_df['category_id'].map(category_mapping)
 
+    # filter out images with more than one label
     cat_per_image = result_df.groupby('file_name')['category_id'].nunique()
     single_cat_images = cat_per_image[cat_per_image == 1].index
 
     filtered_df = result_df[result_df['file_name'].isin(single_cat_images)][['file_name', 'category_id', 'category_name']]
 
-    #map category ids to category indices
-    unique = filtered_df['category_id'].unique() # get array of unique category ids
-    category_id_to_index = {}
-    for index, category_id in enumerate(unique):
-        category_id_to_index[category_id] = index
+    # map category ids to category indices
+    # builds the dictionary
+    if not category_id_to_index:
+        unique = filtered_df['category_id'].unique() # get array of unique category ids
+        for index, category_id in enumerate(unique):
+            category_id_to_index[category_id] = index
 
+    # uses the dictionary
     filtered_df['category_index'] = filtered_df['category_id'].map(category_id_to_index)
 
     return_df = filtered_df[['file_name', 'category_index', 'category_name']]
 
-    # print(return_df['category_name'].unique())
-    # return_df[['file_name', 'category_index', 'category_name']].to_csv('output.csv', index=False)
     return_df.sort_values(by='category_index', inplace=True)
 
-    return return_df[return_df['category_index'].between(0,15)]
-    # return return_df
+    answer = return_df[return_df['category_index'].between(constants.MIN_INDEX, constants.MAX_INDEX - 1)]
+    print(answer)
+    return answer
 
 
 class CustomImageDataset(Dataset):
